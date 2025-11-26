@@ -15,12 +15,23 @@ url = f"{BASE_URL}{bot_key}/"
 
 
 def last_update(request: str):
+    """Вернуть последний апдейт (нужно для тестов)."""
     r = requests.get(request + "getUpdates")
     data = r.json()
     results = data.get("result", [])
     if not results:
         return None
     return results[-1]
+
+
+def get_chat_id(update):
+    """Достать chat_id из апдейта (нужно для тестов)."""
+    return update["message"]["chat"]["id"]
+
+
+def get_message_text(update):
+    """Достать text из апдейта (нужно для тестов)."""
+    return update["message"]["text"]
 
 
 def get_updates(offset=None):
