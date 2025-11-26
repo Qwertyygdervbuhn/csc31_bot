@@ -15,7 +15,6 @@ url = f"{BASE_URL}{bot_key}/"
 
 
 def last_update(request: str):
-    """Вернуть последний апдейт (нужно для тестов)."""
     r = requests.get(request + "getUpdates")
     data = r.json()
     results = data.get("result", [])
@@ -25,12 +24,10 @@ def last_update(request: str):
 
 
 def get_chat_id(update):
-    """Достать chat_id из апдейта (нужно для тестов)."""
     return update["message"]["chat"]["id"]
 
 
 def get_message_text(update):
-    """Достать text из апдейта (нужно для тестов)."""
     return update["message"]["text"]
 
 
@@ -47,6 +44,13 @@ def send_message(chat, text: str):
 
 
 def main():
+    if os.getenv("CI", "").lower() in ("1", "true", "yes"):
+        print("CI mode detected — skipping long-poll bot run.")
+        return
+
+    if not bot_key or not BASE_URL.startswith("http"):
+        raise RuntimeError("TOKEN/URL не заданы или заданы неправильно")
+
     update_id = None
 
     while True:
