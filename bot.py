@@ -14,6 +14,15 @@ BASE_URL = os.getenv("URL", "https://api.telegram.org/bot").rstrip("/")
 url = f"{BASE_URL}{bot_key}/"
 
 
+def last_update(request: str):
+    r = requests.get(request + "getUpdates")
+    data = r.json()
+    results = data.get("result", [])
+    if not results:
+        return None
+    return results[-1]
+
+
 def get_updates(offset=None):
     params = {"timeout": 10}
     if offset:
@@ -44,7 +53,6 @@ def main():
             chat_id = upd["message"]["chat"]["id"]
             text = upd["message"].get("text", "")
             t = text.lower().strip()
-
 
             if t in ("hi", "hello", "hey", "привет"):
                 send_message(chat_id, "Салем! Черкани /help, чтобы увидеть, что я умею")
@@ -112,19 +120,16 @@ def main():
                     send_message(chat_id, get_weather(city))
                 continue
 
-
             if t == "dice":
                 a = random.randint(1, 6)
                 b = random.randint(1, 6)
                 send_message(chat_id, f"Ты выбросил {a} и {b}!\nИтого: {a + b} 🎲")
                 continue
 
-
             result = calculate_expression(text)
             if result is not None:
                 send_message(chat_id, result)
                 continue
-
 
             send_message(chat_id, "Сорян, не пониманте. черкани /help для списка команд.")
 
