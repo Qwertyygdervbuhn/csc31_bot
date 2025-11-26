@@ -1,19 +1,26 @@
 import re
 
 def calculate_expression(text: str):
-    expr = text.replace(",", ".").strip()
+    raw = text.strip().replace(",", ".")
+
+    low = raw.lower()
+    if low.startswith("calc "):
+        expr = raw[5:].strip()
+    elif low.startswith("/calc "):
+        expr = raw[6:].strip()
+    else:
+        expr = raw
 
     if not re.fullmatch(r"[0-9+\-*/().\s]+", expr):
         return None
 
     try:
-        result = eval(expr, {"__builtins__": None}, {})
+        res = eval(expr, {"__builtins__": None}, {})
     except ZeroDivisionError:
         return "Деление на ноль нельзя"
     except Exception:
         return None
 
-    if isinstance(result, (int, float)) and float(result).is_integer():
-        return f"Результат: {int(result)}"
-
-    return f"Результат: {result}"
+    if isinstance(res, (int, float)) and float(res).is_integer():
+        return str(int(res))
+    return str(res)
